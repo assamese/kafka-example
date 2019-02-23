@@ -28,7 +28,7 @@ import java.util.Properties;
  * $ bin/kafka-console-producer --broker-list localhost:9092 --topic InputTopic
  *
  * You can then enter input data by writing some line of text, followed by ENTER:
- * #   4
+ * #   3
  * #   abc
  * # Every line you enter will become the value of a single Kafka message.
  *
@@ -38,7 +38,7 @@ import java.util.Properties;
  *
  *
  * You should see output data similar to:
- * {"16": "16"}
+ * {"3": "9"}
  *
  * {"abc": " abc : Not an Integer"}
  *
@@ -83,7 +83,7 @@ public class AppToCopyFromInputTopicToOutputTopic {
         // Create the output KStream
         final KStream<String, String> outputStream =
                 inputStream.map((key, value) -> {
-                            return new KeyValue<>(value, decodeValue(value)); // validate Integer
+                            return new KeyValue<>(value, mapValue(value));
                         }
                 );
 
@@ -96,12 +96,12 @@ public class AppToCopyFromInputTopicToOutputTopic {
         return streams;
     }
 
-    // To validate input
-    private static String decodeValue(String v) {
+    // Validate input and square it
+    private static String mapValue(String v) {
         try {
             Integer i = Integer.decode(v);
-            int ii = i.intValue() ** 2;
-            return ii.toString();
+            int ii = i.intValue();
+            return Integer.toString(ii * ii); // NO OVERFLOW CHECK !!
         } catch (NumberFormatException nfe) {
             return v + " : Not an Integer";
         }
