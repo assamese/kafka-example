@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sanjay.example</groupId>
+    <artifactId>kafka-streams-apps</artifactId>
+    <packaging>jar</packaging>
+    <version>0.1</version>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
+
+    <!-- Other properties such as kafka.version are derived from parent project(s) such as
+         https://github.com/confluentinc/common (see common's pom.xml for kafka.version).
+    -->
+    <properties>
+
+        <!--jacoco prepare-agent needs argLine defined to set this variable. if we don't have a default set then maven gets angry.-->
+        <argLine></argLine>
+        <!-- AVRO-2122 is a regression in 1.8.2 so we can't upgrade until 1.8.3 is released -->
+        <avro.version>1.8.1</avro.version>
+        <required.maven.version>3.2</required.maven.version>
+        <confluent.version>5.0.0</confluent.version> <!--5.2.0-SNAPSHOT-->
+        <easymock.version>3.6</easymock.version>
+        <exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
+        <!-- 3.1.6 has a regression that breaks when processing Kafka code, seems to be https://github.com/spotbugs/spotbugs/pull/688, verify that Muckrake works if bumping this -->
+        <spotbugs.version>3.1.5</spotbugs.version>
+        <spotbugs.maven.plugin.version>3.1.5</spotbugs.maven.plugin.version>
+        <java.version>1.8</java.version>
+        <jackson.version>2.9.6</jackson.version>
+        <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
+        <junit.version>4.12</junit.version>
+        <kafka.version>2.0.0</kafka.version> <!-- 2.2.0-SNAPSHOT -->
+        <kafka.scala.version>2.11</kafka.scala.version>
+        <licenses.version>${project.version}</licenses.version>
+        <maven-assembly.version>3.0.0</maven-assembly.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
+        <maven-deploy.version>2.8.2</maven-deploy.version>
+        <maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+        <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+        <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
+        <mockito-all.version>1.10.19</mockito-all.version>
+        <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
+        <slf4j-api.version>${slf4j.version}</slf4j-api.version>
+        <jaxb.version>2.3.0</jaxb.version>
+        <!-- Using beta for Java 9 support -->
+        <powermock.version>2.0.0-beta.5</powermock.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <zkclient.version>0.10</zkclient.version>
+        <zookeeper.version>3.4.13</zookeeper.version>
+        <bouncycastle.version>1.60</bouncycastle.version>
+        <checkstyle.version>8.5</checkstyle.version>
+        <maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
+        <maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
+        <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+        <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
+        <checkstyle.config.location>checkstyle/checkstyle.xml</checkstyle.config.location>
+        <checkstyle.suppressions.location>checkstyle/common-suppressions.xml</checkstyle.suppressions.location>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- docker build support -->
+        <GIT_COMMIT>unknown</GIT_COMMIT>
+        <BUILD_NUMBER>-1</BUILD_NUMBER>
+        <docker.skip-build>true</docker.skip-build>
+        <docker.skip-test>true</docker.skip-test>
+        <docker.registry>placeholder/</docker.registry>  <!-- Registry for this build. Must specify a value, or exec plugin throws NPE :((( -->
+        <docker.tag>${project.version}</docker.tag>  <!-- Tag for this build -->
+        <docker.upstream-registry>${docker.registry}</docker.upstream-registry>  <!-- Registry for base images -->
+        <docker.upstream-tag>${docker.tag}</docker.upstream-tag>  <!-- Tag for base images -->
+        <docker.test-registry>${docker.upstream-registry}</docker.test-registry>  <!-- Registry for integration test dependencies -->
+        <docker.test-tag>${docker.upstream-tag}</docker.test-tag>  <!-- Tag for integration test dependencies -->
+
+        <algebird.version>0.13.4</algebird.version>
+        <avro.version>1.8.2</avro.version>
+        <chill.version>0.9.2</chill.version>
+        <docker.skip-build>false</docker.skip-build>
+        <docker.skip-test>false</docker.skip-test>
+        <java.version>1.8</java.version>
+        <licenses.version>5.0.0</licenses.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <scala.version>2.11.8</scala.version>
+        <scalatest.version>2.2.6</scalatest.version>
+
+        <jetty.version>9.4.12.v20180830</jetty.version>
+        <jersey.version>2.27</jersey.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-streams-avro-serde</artifactId>
+            <version>${confluent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>${confluent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+            <version>${confluent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+            <version>${kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams-scala_${kafka.scala.version}</artifactId>
+            <version>${kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${avro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-maven-plugin</artifactId>
+            <version>${avro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <!-- This version must be compatible with the Scala version of the Kafka dependency. -->
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <!-- This could be a test-only dependency, but we keep it a compile dependency so that
+                 users are able to package the examples via `mvn package` and actually run the examples
+                 against a Kafka cluster. -->
+            <groupId>com.101tec</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.8.0-beta2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- The following dependencies on ScalaTest are only required for the Scala tests
+             under src/test/scala/.  They are not required for Java code/tests.
+        -->
+        <dependency>
+            <!-- This is a compile-time dependency but included only for scalatest below,
+                 so still list it under test dependencies. -->
+            <groupId>org.scalactic</groupId>
+            <artifactId>scalactic_2.11</artifactId> <!-- kafka.scala.version 2.11 -->
+            <version>3.2.0-SNAP10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+          <artifactId>scalatest_2.9.1</artifactId>
+          <version>2.0.M6-SNAP22</version>
+          <scope>test</scope>
+      </dependency>
+    </dependencies>
+
+    <build>
+
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+
+</project>
